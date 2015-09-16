@@ -1,5 +1,0 @@
-<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
-<map>
-    <string name="Example:alice@google.com">{&quot;algo&quot;:&quot;SHA1&quot;,&quot;type&quot;:&quot;TOTP&quot;,&quot;secret&quot;:[72,101,108,108,111,33,-34,-83,-66,-17],&quot;issuerExt&quot;:&quot;Example&quot;,&quot;issuerInt&quot;:&quot;Example&quot;,&quot;label&quot;:&quot;alice@google.com&quot;,&quot;counter&quot;:0,&quot;digits&quot;:6,&quot;period&quot;:30}</string>
-    <string name="tokenOrder">[&quot;Example:alice@google.com&quot;]</string>
-</map>
