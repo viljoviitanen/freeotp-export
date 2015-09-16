@@ -17,10 +17,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 
-NOTE: adb backup files can be extracted with the following one-liner on linux:
-
-dd if=backup.ab bs=1 skip=24 | python -c "import zlib,sys;sys.stdout.write(zlib.decompress(sys.stdin.read()))" | tar -xvf -
-
 -->
 <style>
 p{margin:50px}
@@ -28,8 +24,10 @@ div{margin:10px}
 </style>
 <a href="https://github.com/viljoviitanen/freeotp-export">Instructions at github</a>
 <br>
-<input id="file" type="file">
-<script src="https://cdn.rawgit.com/viljoviitanen/qrcodejs/master/qrcode.min.js"></script>
+FreeOTP adb backup file: <input id="file" type="file">
+<script src="https://rawgit.com/nodeca/pako/master/dist/pako_inflate.js"></script>
+<script src="https://rawgit.com/Qvazar/js-untar/master/build/dist/untar.js"></script>
+<script src="https://rawgit.com/viljoviitanen/qrcodejs/master/qrcode.min.js"></script>
 <script type="text/javascript">
 
 //ported from original PHP function
@@ -86,11 +84,9 @@ function querydata(p)
   return r.join("&");
 }
 
-var reader = new FileReader();
-
-reader.onload = function(event) {
+function parsexml(param) {
   parser = new DOMParser();
-  xml=parser.parseFromString(event.target.result, "text/xml");
+  xml=parser.parseFromString(param, "text/xml");
   s=xml.getElementsByTagName('string');
   if (s.length==0) {
     alert('Cannot parse the file');
@@ -109,15 +105,50 @@ reader.onload = function(event) {
       'period'    : j['period'],
     }
     label = (j['issuerExt']) ? j['issuerExt']+':'+j['label'] : j['label'];
-    uri='otpauth://'+j['type'].toLowerCase()+'/'+encodeURIComponent(label)+'?'+querydata(param);
+    uri='otpauth://'+j['type'].toLowerCase()+'/'+encodeURIComponent(label)+'/?'+querydata(param);
     console.log(uri);
     document.getElementById("file").insertAdjacentHTML('afterend', '<p><div>'+name+'</div><div id="'+i+'"></div>' );
     new QRCode(document.getElementById(i),uri);
   }
 }
  
+var reader = new FileReader();
+
+var decoder = new TextDecoder();
+if (!decoder) {
+   alert ("error: browser does not support TextDecoder")
+}
+
+reader.onload = function(event) {
+  try {
+    decompressed = pako.inflate(event.target.result.slice(24));
+  }
+  catch(err) {
+    alert("cannot decompress the adb backup file: "+err);
+    return;
+  }
+  //argh.. pako doesn't return an arraybuffer, and untar expects an arraybuffer. So...
+  var arbuf = new ArrayBuffer(decompressed.byteLength);
+  new Uint8Array(arbuf).set(new Uint8Array(decompressed));
+  untar(arbuf).then(function(files) {
+    var found=0;
+    for (var i = 0, len = files.length; i < len; i++) {
+      if (files[i].name == "apps/org.fedorahosted.freeotp/sp/tokens.xml") {
+        found=1;
+        break;
+      }
+    }
+    if (!found) {
+      alert("did not find tokens.xml in adb backup file.");
+    }
+    else {
+      parsexml(decoder.decode(files[i].buffer));
+    }
+  });  
+}
+
 document.getElementById("file").onchange=function() {
-  reader.readAsText(this.files[0]);
+  reader.readAsArrayBuffer(this.files[0]);
 };
 
 </script>
