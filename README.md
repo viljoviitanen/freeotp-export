@@ -12,11 +12,15 @@ __Be sure to understand the security implications of backing up the secrets from
 
 Make an adb backup of FreeOTP, extract the backup file (details on how to do this are currenly left as an excercise for the reader). Open the tokens.xml file (path is apps/org.fedorahosted.freeotp/sp) with this app. Read the displayed qrcodes with the authenticator app on your other phone.
 
-The author has tested the app with current Google Chrome and Mozilla Firefox on Ubuntu 14.04 in September 2015.
+The author has tested the app with current Google Chrome and Mozilla Firefox on Ubuntu 14.04 in September 2015, generated qrcodes have been succesfully imported in FreeOTP and Google Authenticator on Android and Microsoft Authenticator on Windows Phone 8.
 
 This app can be opened directly at https://cdn.rawgit.com/viljoviitanen/freeotp-export/master/export.html 
 
 An example tokens.xml file from FreeOTP is included with this repository.
+
+#Todo
+
+Use android backup files without fiddling with command line tools. There are javascript zlib (deflate) and tar implementations with free licenses, so it should be relatively easy.
 
 #Acknowledgements
 
