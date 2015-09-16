@@ -18,10 +18,6 @@ This app can be opened directly at https://rawgit.com/viljoviitanen/freeotp-expo
 
 An example tokens.xml file from FreeOTP is included with this repository.
 
-#Todo
-
-Use android backup files without fiddling with command line tools. There are javascript zlib (deflate) and tar implementations with free licenses, so it should be relatively easy.
-
 #Acknowledgements
 
 Based on https://github.com/philipsharp/FreeOTPDecoder (Apache license)
