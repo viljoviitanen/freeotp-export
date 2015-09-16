@@ -109,7 +109,7 @@ reader.onload = function(event) {
       'period'    : j['period'],
     }
     label = (j['issuerExt']) ? j['issuerExt']+':'+j['label'] : j['label'];
-    uri='otpauth://'+j['type'].toLowerCase()+'/'+encodeURIComponent(label)+'/?'+querydata(param);
+    uri='otpauth://'+j['type'].toLowerCase()+'/'+encodeURIComponent(label)+'?'+querydata(param);
     console.log(uri);
     document.getElementById("file").insertAdjacentHTML('afterend', '<p><div>'+name+'</div><div id="'+i+'"></div>' );
     new QRCode(document.getElementById(i),uri);
