@@ -24,7 +24,7 @@ Uses https://github.com/davidshimjs/qrcodejs (MIT license)
 
 Uses https://github.com/nodeca/pako (MIT license)
 
-Uses https://github.com/Qvazar/js-untar (GPLv3 license)
+Uses https://github.com/Qvazar/js-untar (MIT license)
 
 Content is served by https://rawgit.com/
 
