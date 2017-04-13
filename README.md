@@ -12,11 +12,11 @@ __Be sure to understand the security implications of backing up the secrets from
 
 Make an adb backup of FreeOTP, (details on how to do this are currenly left as an excercise for the reader. While you are doing the backup, consider the above warning!). Open the adb backup file (.ab) with this app. Read the displayed qrcodes with the authenticator app on your other phone.
 
-The author has tested the app with current Google Chrome and Mozilla Firefox on Ubuntu 14.04 in September 2015. Other browsers probably do not work. Generated qrcodes have been succesfully imported in FreeOTP and Google Authenticator on Android and Microsoft Authenticator on Windows Phone 8.
+The author has tested the app with current Google Chrome and Mozilla Firefox on Ubuntu 16.04 in April 2017. Other browsers probably do not work. Generated qrcodes have been succesfully imported in FreeOTP and Google Authenticator on Android and Microsoft Authenticator on Windows Phone 8, Windows Phone 10 and Android.
 
 This app can be opened directly at https://rawgit.com/viljoviitanen/freeotp-export/master/export.html 
 
-#Acknowledgements
+# Acknowledgements
 
 Based on https://github.com/philipsharp/FreeOTPDecoder (Apache license)
 
