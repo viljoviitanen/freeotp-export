@@ -97,9 +97,14 @@ function parsexml(param) {
       continue;
     }
     j=JSON.parse(s[i].textContent);
+    console.log(j);
+    issuer = j['issuerInt'] ? j['issuerInt'] : j['issuerExt'];
+    issuer = issuer ? issuer : j['issuerAlt'];
+    issuer = issuer ? issuer : j['labelAlt'];
+    issuer = issuer ? issuer : 'Unknown'+i;
     param={
       'secret'    : encodeSecretBytes(j['secret']),
-      'issuer'    : j['issuerInt'] ? j['issuerInt'] : j['issuerExt'],
+      'issuer'    : issuer,
       'algorithm' : j['algo'],
       'digits'    : j['digits'],
       'period'    : j['period'],
