@@ -21,7 +21,7 @@ This app can be opened directly at https://rawgit.com/viljoviitanen/freeotp-expo
 ## XML Backup
 
 If your phone is already rooted you can directly backup the XML file containing all your accounts.
-Just use a root explorer (something like [Amaze File Manager](https://play.google.com/store/apps/details?id=com.amaze.filemanager)) to copy the tokens.xml file from `/data/data/org.fedorahosted.freeotp/shared_prefs/tokens.xml` to your phones internal storage.
+Just use a root explorer to copy the tokens.xml file from `/data/data/org.fedorahosted.freeotp/shared_prefs/tokens.xml` to your phones internal storage.
 From there you can copy it onto you PC any way you like.
 Open the tokens.xml file with this app. Read the displayed qrcodes with the authenticator app on your other phone.
 
