@@ -1,0 +1,141 @@
+<!--
+ * Based on php code by Philip Sharp, converted to javascript by Viljo Viitanen
+ *
+ * FreeOTP Decoder Javascript
+ * 
+ * Copyright 2015 Philip Sharp, Viljo Viitanen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+
+-->
+<style>
+p{margin:50px}
+div{margin:10px}
+</style>
+<script src="https://rawgit.com/viljoviitanen/pako/master/dist/pako_inflate.js"></script>
+<script src="https://rawgit.com/viljoviitanen/js-untar/master/build/dist/untar.js"></script>
+<script src="https://rawgit.com/viljoviitanen/qrcodejs/master/qrcode.min.js"></script>
+<script type="text/javascript">
+
+//ported from original PHP function
+/**
+ * Convert stored secret into otpauth URI parameter
+ *
+ * Port of encodeInternal() method from Google Authenticator via FreeOTP
+ * @link https://fedorahosted.org/freeotp/browser/android/app/src/main/java/com/google/android/apps/authenticator/Base32String.java
+ *
+ * @param array $data Internal representation of the secret as byte array
+ * @return string Secret as Base32 encode string
+ */
+function encodeSecretBytes(data) {
+    DIGITS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','2','3','4','5','6','7','']; // 32 chars
+    SHIFT = 5; // trailing zeros in binary representation of the size of the alphabet
+    MASK = 31; // one less than size of alphabet
+    
+    // SHIFT is the number of bits per output character, so the length of the
+    // output is the length of the input multiplied by 8/SHIFT, rounded up.
+    if (data.length >= (1 << 28)) {
+        alert('Bad Secret');
+    }
+    outputLength = (data.length * 8 + SHIFT - 1) / SHIFT;
+    result = '';
+    buffer = data[0];
+    next = 1;
+    bitsLeft = 8;
+    while (bitsLeft > 0 || next < data.length) {
+        if (bitsLeft < SHIFT) {
+            if (next < data.length) {
+                buffer <<= 8;
+                buffer |= (data[next++] & 0xff);
+                bitsLeft += 8;
+            } else {
+                pad = SHIFT - bitsLeft;
+                buffer <<= pad;
+                bitsLeft += pad;
+            }
+        }
+        index = MASK & (buffer >> (bitsLeft - SHIFT));
+        bitsLeft -= SHIFT;
+        result += DIGITS[index];
+    }
+    return result;
+}
+
+//small helper function
+function querydata(p)
+{
+  var r= [];
+  for (var d in p) {
+    r.push(encodeURIComponent(d)+"="+encodeURIComponent(p[d]));
+  }
+  return r.join("&");
+}
+
+function parsexml(param) {
+  parser = new DOMParser();
+  xml=parser.parseFromString(param, "text/xml");
+  s=xml.getElementsByTagName('string');
+  if (s.length==0) {
+    alert('Cannot parse the file');
+  }
+  for (var i = 0, len = s.length; i < len; i++) {
+    name=s[i].attributes['name'].value;
+    if (name == 'tokenOrder') {
+      continue;
+    }
+    j=JSON.parse(s[i].textContent);
+    console.log(j);
+    issuer = j['issuerInt'] ? j['issuerInt'] : j['issuerExt'];
+    issuer = issuer ? issuer : j['issuerAlt'];
+    issuer = issuer ? issuer : j['labelAlt'];
+    issuer = issuer ? issuer : 'Unknown'+i;
+    param={
+      'secret'    : encodeSecretBytes(j['secret']),
+      'issuer'    : issuer,
+      'algorithm' : j['algo'],
+      'digits'    : j['digits'],
+      'period'    : j['period'],
+    }
+    label = (j['issuerExt']) ? j['issuerExt']+':'+j['label'] : j['label'];
+    uri='otpauth://'+j['type'].toLowerCase()+'/'+encodeURIComponent(label)+'?'+querydata(param);
+    console.log(uri);
+    document.getElementById("file").insertAdjacentHTML('afterend', '<p><div>'+name+'</div><div id="'+i+'"></div>' );
+    new QRCode(document.getElementById(i),uri);
+  }
+}
+ 
+var decoder = new TextDecoder();
+if (!decoder) {
+   alert ("error: browser does not support TextDecoder")
+}
+
+var reader = new FileReader();
+
+
+function onChange(event) {
+  var file = event.target.files[0];
+  var reader = new FileReader();
+  reader.onload = function(event) {
+    var text = event.target.result;
+    parsexml(text);
+  };
+
+  reader.readAsText(file);
+}
+
+</script>
+
+<a href="https://github.com/viljoviitanen/freeotp-export">Instructions at GitHub</a>
+<br>
+FreeOTP XML file: <input id="file" type="file" onchange="onChange(event)">
+
